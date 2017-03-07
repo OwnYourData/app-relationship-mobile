@@ -5,7 +5,7 @@
 # - run locally
 #   runApp('~/oyd/relationship-mobile', host='0.0.0.0', port=1302)
 # - copy files to Github
-#   cp -r *.R *.r *.txt www github/app-relationship-mobile; cd github/app-relationship-mobile;
+#   cp -r *.R *.r *.txt www docker github/app-relationship-mobile; cd github/app-relationship-mobile;
 
 # UI files ================================================
 source("appMobile.R")
