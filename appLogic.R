@@ -72,7 +72,7 @@ observeEvent(input$saveRelationInput, {
                         data <- list(
                                 date = as.character(input$dateInput),
                                 value = input$noteInput,
-                                '_oydRepoName' = paste0('Notizen #', personNo))
+                                '_oydRepoName' = paste0('Notizen #', person))
                         writeItem(app, url, data)
                 }
                 
