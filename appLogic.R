@@ -22,7 +22,23 @@ repoData <- function(repo){
 }
 
 appStart <- function(){
-        
+        name1 <- "Person #1"
+        name2 <- "Person #2"
+        nameData <- repoData(paste0(appKey, '.config'))
+        if(nrow(nameData) == 1){
+                storedName1 <- as.character(nameData$name1)
+                storedName2 <- as.character(nameData$name2)
+                if(nchar(storedName1) > 0){
+                        name1 <- storedName1
+                }
+                if(nchar(storedName2) > 0){
+                        name2 <- storedName2
+                }
+        }
+        myChoices <- c(1,2)
+        names(myChoices) <- c(name1, name2)
+        updateSelectInput(session, 'personSelect',
+                          choices = myChoices)
 }
 
 observeEvent(input$saveRelationInput, {
@@ -75,8 +91,10 @@ observeEvent(input$saveRelationInput, {
                                 '_oydRepoName' = paste0('Notizen #', person))
                         writeItem(app, url, data)
                 }
-                
-                output$relationInputStatus <- renderUI('Daten gespeichert')
+                createAlert(session, 'taskInfo', alertId = 'saveTask',
+                            style = 'success', append = FALSE,
+                            content = 'Daten gespeichert')
+                #output$relationInputStatus <- renderUI('Daten gespeichert')
         }
 })
 
@@ -113,68 +131,91 @@ output$relationGraph <- renderPlotly({
         data1 <- repoData(paste0(appKey, '.', 
                                  input$topicSelect, '_1'))
         data1 <- dateRangeSelect(data1)
-        data1$marker_size <- 6
-        data1Note <- repoData(paste0(appKey, '.diary_1'))
-        data1Note <- dateRangeSelect(data1Note)
-        if(nrow(data1Note) > 0){
-                data1Note <- data1Note[, c('date', 'value')]
-                colnames(data1Note) <- c('date', 'note')
-                data1 <- merge(data1, data1Note, by='date', all=TRUE)
-                data1[!is.na(data1$note), 'marker_size'] <- 10
+        if(nrow(data1) > 0){
+                data1$marker_size <- 6
+                data1Note <- repoData(paste0(appKey, '.diary_1'))
+                data1Note <- dateRangeSelect(data1Note)
+                if(nrow(data1Note) > 0){
+                        data1Note <- data1Note[, c('date', 'value')]
+                        colnames(data1Note) <- c('date', 'note')
+                        data1 <- merge(data1, data1Note, by='date', all=TRUE)
+                        data1[!is.na(data1$note), 'marker_size'] <- 10
+                }
         }
 
         data2 <- repoData(paste0(appKey, '.', 
                                  input$topicSelect, '_2'))
         data2 <- dateRangeSelect(data2)
-        data2$marker_size <- 6
-        data2Note <- repoData(paste0(appKey, '.diary_2'))
-        data2Note <- dateRangeSelect(data2Note)
-        if(nrow(data2Note) > 0){
-                data2Note <- data2Note[, c('date', 'value')]
-                colnames(data2Note) <- c('date', 'note')
-                data2 <- merge(data2, data2Note, by='date', all=TRUE)
-                data2[!is.na(data2$note), 'marker_size'] <- 10
+        if(nrow(data1) > 0){
+                data2$marker_size <- 6
+                data2Note <- repoData(paste0(appKey, '.diary_2'))
+                data2Note <- dateRangeSelect(data2Note)
+                if(nrow(data2Note) > 0){
+                        data2Note <- data2Note[, c('date', 'value')]
+                        colnames(data2Note) <- c('date', 'note')
+                        data2 <- merge(data2, data2Note, by='date', all=TRUE)
+                        data2[!is.na(data2$note), 'marker_size'] <- 10
+                }
         }
-
+        name1 <- "Person #1"
+        name2 <- "Person #2"
+        nameData <- repoData(paste0(appKey, '.config'))
+        if(nrow(nameData) == 1){
+                storedName1 <- as.character(nameData$name1)
+                storedName2 <- as.character(nameData$name2)
+                if(nchar(storedName1) > 0){
+                        name1 <- storedName1
+                }
+                if(nchar(storedName2) > 0){
+                        name2 <- storedName2
+                }
+        }
+        
         pdf(NULL)
         outputPlot <- plotly_empty()
         if((nrow(data1) > 0) |
            (nrow(data2) > 0)){
-                outputPlot <- plot_ly() %>%
-                        add_lines(x = as.Date(data1$date),
-                                  y = data1$value,
-                                  line = list(
-                                          color = 'blue',
-                                          width = 2,
-                                          shape = 'spline'),
-                                  name = 'Person #1') %>%
-                        add_markers(x = as.Date(data1$date),
-                                    y = data1$value,
-                                    marker = list(
-                                            color='blue',
-                                            size = data1$marker_size),
-                                    text = data1$note,
-                                    name = '', 
-                                    showlegend = FALSE) %>%
-                        add_lines(x = as.Date(data2$date),
-                                  y = data2$value,
-                                  line = list(
-                                          color = 'orange',
-                                          width = 2,
-                                          shape = 'spline'),
-                                  name = 'Person #1') %>%
-                        add_markers(x = as.Date(data2$date),
-                                    y = data2$value,
-                                    marker = list(
-                                            color='orange',
-                                            size = data2$marker_size),
-                                    name = '', 
-                                    showlegend = FALSE) %>%
+                outputPlot <- plot_ly() 
+                if(nrow(data1) > 0){
+                        outputPlot <- outputPlot %>%
+                                add_lines(x = as.Date(data1$date),
+                                          y = data1$value,
+                                          line = list(
+                                                  color = 'blue',
+                                                  width = 2,
+                                                  shape = 'spline'),
+                                          name = name1) %>%
+                                add_markers(x = as.Date(data1$date),
+                                            y = data1$value,
+                                            marker = list(
+                                                    color='blue',
+                                                    size = data1$marker_size),
+                                            text = data1$note,
+                                            name = '', 
+                                            showlegend = FALSE)
+                }
+                if(nrow(data2) > 0){
+                        outputPlot <- outputPlot %>%
+                                add_lines(x = as.Date(data2$date),
+                                          y = data2$value,
+                                          line = list(
+                                                  color = 'orange',
+                                                  width = 2,
+                                                  shape = 'spline'),
+                                          name = name2) %>%
+                                add_markers(x = as.Date(data2$date),
+                                            y = data2$value,
+                                            marker = list(
+                                                    color='orange',
+                                                    size = data2$marker_size),
+                                            name = '', 
+                                            showlegend = FALSE)
+                }
+                outputPlot <- outputPlot %>%
                         layout( xaxis = list(type = 'date',
                                              tickformat = '%Y-%m-%d'),
-                                yaxis = list(range=c(0.5,6.5),
-                                             title='< schlechter - besser >'))
+                                yaxis = list(range = c(0.5, 6.5),
+                                             title = '< schlechter - besser >'))
         }
         dev.off()
-        outputPlot
-})
+        outputPlot})

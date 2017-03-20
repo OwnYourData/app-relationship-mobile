@@ -37,6 +37,7 @@ appNewData <- function(){
                                rows=2, cols=50,
                                ''),
                  br(),br(),
+                 bsAlert('taskInfo'),
                  actionButton('saveRelationInput', 'Speichern',
                               icon('save')),
                  br(), br(), uiOutput('relationInputStatus')
