@@ -4,4 +4,4 @@
 # constants required for every app
 appTitle <- 'Beziehungstracker'
 app_id <- 'eu.ownyourdata.relationship'
-desktopUrl <- 'https://beziehungstracker.datentresor.org'
+desktopUrl <- 'https://beziehungstracker.oydapp.eu'
